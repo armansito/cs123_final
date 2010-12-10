@@ -44,14 +44,15 @@ void GLWidget::paintGL() {
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event) {
     float2 pos = float2(event->x(), event->y());
-    if(event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
+    if(event->buttons() & Qt::RightButton)
         draw_engine_->mouse_drag_event(mouse_pos_prev_, pos);
     mouse_pos_prev_ = pos;
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {
     mouse_pos_prev_.x = event->x(), mouse_pos_prev_.y = event->y();
-    draw_engine_->mouse_press_event(float2((float)event->x(),(float)event->y()));
+    if (event->buttons() & Qt::LeftButton)
+        draw_engine_->mouse_press_event(float2((float)event->x(),(float)event->y()));
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event) {

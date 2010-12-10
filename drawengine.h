@@ -10,6 +10,7 @@
 #endif
 #include "glm.h"
 #include "common.h"
+#include <QVector3D>
 
 class QGLContext;
 class QGLShaderProgram;
@@ -63,6 +64,10 @@ protected:
     void create_blur_kernel(int radius,int w,int h,GLfloat* kernel,GLfloat* offsets);
 
     float3 getMouseRay(const float2 &mouse, const Camera &camera);
+
+    QVector3D ripple;
+
+    double modelviewMatrix[16], projectionMatrix[16];
 
     //member variables
     QHash<QString, QGLShaderProgram *>          shader_programs_; ///hash map of all shader programs

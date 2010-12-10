@@ -113,8 +113,7 @@ void DrawEngine::load_models() {
     models_["grid"].idx = glGenLists(1);
 
     glNewList(models_["grid"].idx,GL_COMPILE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     float r = WATER_WIDTH / 2.f, dim = WATER_WIDTH, delta = r * 2 / dim;
     for(int y = 0; y < dim; ++y) {
         glBegin(GL_QUAD_STRIP);
@@ -349,6 +348,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
     shader_programs_["water"]->setUniformValue("time", time);
+    shader_programs_["water"]->setUniformValue("ripple",ripple);
     shader_programs_["water"]->setUniformValue("CubeMap",GL_TEXTURE0);
 
     glCallList(models_["grid"].idx);
@@ -374,7 +374,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     shader_programs_["reflect"]->release();
     */
 
-    glDisable(GL_CULL_FACE);
+    //glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
     glDisable(GL_TEXTURE_CUBE_MAP);
@@ -418,21 +418,21 @@ void DrawEngine::perspective_camera(int w,int h) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(camera_.fovy,ratio,camera_.near,camera_.far);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     gluLookAt(camera_.eye.x,camera_.eye.y,camera_.eye.z,
               camera_.center.x,camera_.center.y,camera_.center.z,
               camera_.up.x,camera_.up.y,camera_.up.z);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelviewMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
 }
 
 float3 DrawEngine::getMouseRay(const float2 &mouse, const Camera &camera)
 {
     int viewport[4];
-    double worldX, worldY, worldZ, modelviewMatrix[16], projectionMatrix[16];
+    double worldX, worldY, worldZ;
     glGetIntegerv(GL_VIEWPORT, viewport);
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelviewMatrix);
-    glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
-    gluUnProject(mouse.x, viewport[3] - mouse.y - 1, 1,
+    gluUnProject(mouse.x, (float)viewport[3] - mouse.y - 1, 1,
                  modelviewMatrix, projectionMatrix, viewport,
                  &worldX, &worldY, &worldZ);
     return (float3(worldX, worldY, worldZ) - camera.eye).getNormalized();
@@ -503,7 +503,7 @@ void DrawEngine::mouse_press_event(float2 point)
     float3 intersect;
     float t = -p.y / R.y;
     intersect = p + R*t;
-    LOG(intersect);
+    ripple = QVector3D(intersect.x,intersect.y,intersect.z);
 }
 
 /**
