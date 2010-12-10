@@ -43,7 +43,7 @@ void GLWidget::paintGL() {
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event) {
-    float2 pos = {event->x(), event->y()};
+    float2 pos = float2(event->x(), event->y());
     if(event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
         draw_engine_->mouse_drag_event(mouse_pos_prev_, pos);
     mouse_pos_prev_ = pos;
@@ -51,6 +51,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {
     mouse_pos_prev_.x = event->x(), mouse_pos_prev_.y = event->y();
+    draw_engine_->mouse_press_event(float2((float)event->x(),(float)event->y()));
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event) {
@@ -76,12 +77,12 @@ void GLWidget::keyPressEvent(QKeyEvent *event) {
 
 void GLWidget::render_text() {
     glColor3f(1.f, 1.f, 1.f);
-    QFont f("Deja Vu Sans Mono", 8, 4, false);
+    QFont f("Deja Vu Sans Mono", 15, 10, false);
     float fps =  draw_engine_->fps();
     if (fps >= 0 && fps < 1000) {
        prev_fps_ *= 0.95;
        prev_fps_ += draw_engine_->fps() * 0.05;
 
     } this->renderText(10.0, 20.0, "FPS: " + QString::number((int)(prev_fps_)), f);
-    this->renderText(10.0, 35.0, "S: Save screenshot", f);
+    this->renderText(10.0, 35.0, "S: YOUR MOM", f);
 }

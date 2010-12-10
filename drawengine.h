@@ -39,6 +39,7 @@ public:
     void resize_frame(int w, int h);
     void mouse_wheel_event(int dx);
     void mouse_drag_event(float2 p0, float2 p1);
+    void mouse_press_event(float2 point);
     void key_press_event(QKeyEvent *event);
     //getters and setters
     float fps() { return fps_; }
@@ -60,6 +61,8 @@ protected:
     GLuint load_cube_map(QList<QFile *> files);
     void create_fbos(int w, int h);
     void create_blur_kernel(int radius,int w,int h,GLfloat* kernel,GLfloat* offsets);
+
+    float3 getMouseRay(const float2 &mouse, const Camera &camera);
 
     //member variables
     QHash<QString, QGLShaderProgram *>          shader_programs_; ///hash map of all shader programs
