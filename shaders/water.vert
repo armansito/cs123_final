@@ -1,6 +1,7 @@
 uniform float time;
 varying vec3 normal, lightDir, r;
-uniform vec3 ripple;
+uniform int ripples_count;
+uniform vec4 ripples[ripples_count];
 const vec3 L = vec3(0.,0.,1.);
 
 void main()
@@ -11,7 +12,7 @@ void main()
 	pos.y = sin(12.0 * dist + time / 250.0) * 0.1;
 	
 	// ripple calculation
-	dist = sqrt((pos.x - ripple.x)*(pos.x - ripple.x) + (pos.z - ripple.z)*(pos.z - ripple.z));
+//	dist = sqrt((pos.x - ripple.x)*(pos.x - ripple.x) + (pos.z - ripple.z)*(pos.z - ripple.z));
 	pos.y = pos.y + sin(dist - time / 250.0) ;
 
 	gl_Position = gl_ModelViewProjectionMatrix * pos;		

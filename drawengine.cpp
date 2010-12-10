@@ -43,6 +43,9 @@ extern "C"{
 #define WATER_WIDTH (100)
 #define LOG(s) cout << s << endl;
 
+#define MAX_RIPPLES 50
+#define RIPPLE_DEATH_TIME 10000
+
 
 /**
   @paragraph DrawEngine ctor.  Expects a Valid OpenGL context and the viewport's current
@@ -168,9 +171,9 @@ void DrawEngine::load_shaders() {
     cout << "\033[1mLoading shaders...\033[0m" << endl;
     shader_programs_["reflect"] = new QGLShaderProgram(context_);
     shader_programs_["reflect"]->addShaderFromSourceFile(QGLShader::Vertex,
-                                                       ROOT_PATH "shaders/reflect.vert");
+                                                         ROOT_PATH "shaders/reflect.vert");
     shader_programs_["reflect"]->addShaderFromSourceFile(QGLShader::Fragment,
-                                                       ROOT_PATH "shaders/reflect.frag");
+                                                         ROOT_PATH "shaders/reflect.frag");
     shader_programs_["reflect"]->link();
     cout << "\t \033[32mshaders/reflect\033[0m" << endl;
     shader_programs_["water"] = new QGLShaderProgram(context_);
@@ -182,13 +185,13 @@ void DrawEngine::load_shaders() {
     cout << "\t \033[32mshaders/water\033[0m" << endl;
     shader_programs_["brightpass"] = new QGLShaderProgram(context_);
     shader_programs_["brightpass"]->addShaderFromSourceFile(QGLShader::Fragment,
-                                                       ROOT_PATH "shaders/brightpass.frag");
+                                                            ROOT_PATH "shaders/brightpass.frag");
     shader_programs_["brightpass"]->link();
     cout << "\t \033[32mshaders/brightpass\033[0m" << endl;
 
     shader_programs_["blur"] = new QGLShaderProgram(context_);
     shader_programs_["blur"]->addShaderFromSourceFile(QGLShader::Fragment,
-                                                       ROOT_PATH "shaders/blur.frag");
+                                                      ROOT_PATH "shaders/blur.frag");
     shader_programs_["blur"]->link();
     cout << "\t \033[32mshaders/blur\033[0m" << endl;
 }
@@ -304,6 +307,34 @@ void DrawEngine::draw_frame(float time,int w,int h) {
 }
 
 /**
+  @paragraph Updates each ripples elapsed time. If the ripple has been around for a
+             certain time, it will be declared dead and removed from the list
+ **/
+void DrawEngine::updateRipples()
+{
+    Ripple r;
+    std::vector<Ripple>::iterator it = _ripples.begin();
+    while (it != _ripples.end()) {
+        r = (*it);
+        if (r._time->elapsed() >= RIPPLE_DEATH_TIME) {
+            delete r._time;
+            _ripples.erase(it++);
+        } else ++it;
+    }
+}
+
+void DrawEngine::addRipple(float3 p)
+{
+    if (_ripples.size() < MAX_RIPPLES) {
+        Ripple r;
+        r._position = p;
+        r._time = new QTime();
+        _ripples.push_back(r);
+        r._time->start();
+    }
+}
+
+/**
   @paragraph Should run a gaussian blur on the texture stored in
   fbo 2 and put the result in fbo 1.  The blur should have a radius of 2.
 
@@ -339,6 +370,17 @@ void DrawEngine::render_blur(float w,float h) {
 
 **/
 void DrawEngine::render_scene(float time,int w,int h) {
+
+    GLfloat *ripples = new GLfloat[_ripples.size()*4];
+    Ripple r;
+    int i = -1;
+    for (std::vector<Ripple>::iterator it = _ripples.begin(); it != _ripples.end(); ++it) {
+        r = (*it);
+        ripples[i++] = r._position.x;
+        ripples[i++] = r._position.y;
+        ripples[i++] = r._position.z;
+        ripples[i++] = (float)r._time->elapsed();
+    }
     glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_TEXTURE_CUBE_MAP);
@@ -348,8 +390,11 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
     shader_programs_["water"]->setUniformValue("time", time);
-    shader_programs_["water"]->setUniformValue("ripple",ripple);
+    shader_programs_["water"]->setUniformValueArray("ripples",ripples,_ripples.size()*4,4);
+    shader_programs_["water"]->setUniformValue("ripples_count",_ripples.size());
     shader_programs_["water"]->setUniformValue("CubeMap",GL_TEXTURE0);
+
+    delete [] ripples;
 
     glCallList(models_["grid"].idx);
 
@@ -363,7 +408,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     shader_programs_["water"]->release();
 
     /*
-    shader_programs_["reflect"]->bind();
+    shader_programs_["reflect"]->bind();\
     shader_programs_["reflect"]->setUniformValue("CubeMap",GL_TEXTURE0);
 
     glPushMatrix();
@@ -471,7 +516,7 @@ void DrawEngine::resize_frame(int w,int h) {
 /**
   @paragraph Called by GLWidget when the mouse is dragged.  Rotates the camera
   based on mouse movement.
-
+std::vector iterator
   @param p0: the old mouse position
   @param p1: the new mouse position
 **/
@@ -503,7 +548,8 @@ void DrawEngine::mouse_press_event(float2 point)
     float3 intersect;
     float t = -p.y / R.y;
     intersect = p + R*t;
-    ripple = QVector3D(intersect.x,intersect.y,intersect.z);
+    Ripple r;
+    addRipple(intersect);
 }
 
 /**
@@ -545,7 +591,7 @@ GLuint DrawEngine::load_cube_map(QList<QFile *> files) {
 void DrawEngine::create_blur_kernel(int radius,int w,int h,GLfloat* kernel,GLfloat* offsets) {
     int size = radius * 2 + 1;
     float sigma = radius / 3.0f,twoSigmaSigma = 2.0f * sigma * sigma,
-        rootSigma = sqrt(twoSigmaSigma * M_PI),total = 0.0f;
+    rootSigma = sqrt(twoSigmaSigma * M_PI),total = 0.0f;
     float xOff = 1.0f / w,yOff = 1.0f / h;
     int offsetIndex = 0;
     for(int y = -radius,idx = 0; y <= radius; ++y) {
