@@ -39,7 +39,8 @@ extern "C"{
     extern void APIENTRY glActiveTexture (GLenum);
 }
 
-#define WATER_WIDTH (10.f)
+// this is the width of the big water square.
+#define WATER_WIDTH (100)
 
 /**
   @paragraph DrawEngine ctor.  Expects a Valid OpenGL context and the viewport's current
@@ -108,8 +109,11 @@ void DrawEngine::load_models() {
 
     //Create grid
     models_["grid"].idx = glGenLists(1);
+
     glNewList(models_["grid"].idx,GL_COMPILE);
-    float r = WATER_WIDTH, dim = 50, delta = r * 2 / dim;
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    float r = WATER_WIDTH / 2.f, dim = WATER_WIDTH, delta = r * 2 / dim;
     for(int y = 0; y < dim; ++y) {
         glBegin(GL_QUAD_STRIP);
         for(int x = 0; x <= dim; ++x) {
@@ -118,6 +122,7 @@ void DrawEngine::load_models() {
         }
         glEnd();
     }
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEndList();
 
     cout << "\t \033[32mgrid compiled\033[0m" << endl;
@@ -338,7 +343,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glEnable(GL_TEXTURE_CUBE_MAP);
     glBindTexture(GL_TEXTURE_CUBE_MAP,textures_["cube_map_1"]);
     glCallList(models_["skybox"].idx);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
     shader_programs_["water"]->setUniformValue("time", time);
