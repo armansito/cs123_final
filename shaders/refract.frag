@@ -12,5 +12,7 @@ void main (void)
 		// Specular
 		final_color += textureCube( CubeMap, r);
 	}
+	
 	gl_FragColor = final_color;
+	//gl_FragColor = vec4(255, 0, 0, 255);	
 }

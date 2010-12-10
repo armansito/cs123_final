@@ -62,7 +62,7 @@ DrawEngine::DrawEngine(const QGLContext *context,int w,int h) : context_(context
     //init member variables
     previous_time_ = 0.0f;
     camera_.center.x = 0.f,camera_.center.y = 0.f,camera_.center.z = 0.f;
-    camera_.eye.x = 0.f,camera_.eye.y = 0.0f,camera_.eye.z = -2.f;
+    camera_.eye.x = 0.f,camera_.eye.y = 5.0f,camera_.eye.z = -5.f;
     camera_.up.x = 0.f,camera_.up.y = 1.f,camera_.up.z = 0.f;
     camera_.near = 0.1f,camera_.far = 100.f;
     camera_.fovy = 60.f;
@@ -103,19 +103,21 @@ void DrawEngine::load_models() {
     glmUnitize(models_["dragon"].model);
     models_["dragon"].idx = glmList(models_["dragon"].model,GLM_SMOOTH);
     cout << "\t \033[32m/course/cs123/data/mesh/xyzrgb_dragon_old.obj\033[0m" << endl;
+
     //Create grid
     models_["grid"].idx = glGenLists(1);
     glNewList(models_["grid"].idx,GL_COMPILE);
-    float r = 1.f,dim = 10,delta = r * 2 / dim;
+    float r = 10.f, dim = 50, delta = r * 2 / dim;
     for(int y = 0; y < dim; ++y) {
         glBegin(GL_QUAD_STRIP);
         for(int x = 0; x <= dim; ++x) {
-            glVertex2f(x * delta - r,y * delta - r);
-            glVertex2f(x * delta - r,(y + 1) * delta - r);
+            glVertex3f(x * delta - r, 0, y * delta - r);
+            glVertex3f(x * delta - r, 0, (y + 1) * delta - r);
         }
         glEnd();
     }
     glEndList();
+
     cout << "\t \033[32mgrid compiled\033[0m" << endl;
     models_["skybox"].idx = glGenLists(1);
     glNewList(models_["skybox"].idx,GL_COMPILE);
@@ -214,7 +216,7 @@ void DrawEngine::create_fbos(int w,int h) {
                                                              GL_TEXTURE_2D,GL_RGB16F_ARB);
     framebuffer_objects_["fbo_0"]->format().setSamples(16);
     //Allocate the secondary framebuffer obejcts for rendering textures to (post process effects)
-    //These do not require depth attachments.
+    //These do not require depth attachments.kybo
     framebuffer_objects_["fbo_1"] = new QGLFramebufferObject(w,h,QGLFramebufferObject::NoAttachment,
                                                              GL_TEXTURE_2D,GL_RGB16F_ARB);
     //You need to create another framebuffer here.  Look up two lines to see how to do this... =.=
@@ -255,20 +257,21 @@ void DrawEngine::draw_frame(float time,int w,int h) {
     perspective_camera(w,h);
     render_scene(time,w,h);
     framebuffer_objects_["fbo_0"]->release();
+
     //copy the rendered scene into framebuffer 1
     framebuffer_objects_["fbo_0"]->blitFramebuffer(framebuffer_objects_["fbo_1"],
                                                    QRect(0,0,w,h),framebuffer_objects_["fbo_0"],
                                                    QRect(0,0,w,h),GL_COLOR_BUFFER_BIT,GL_NEAREST);
-
-    //you may want to add code here
-    // step 0
     orthogonal_camera(w,h);
     glBindTexture(GL_TEXTURE_2D, framebuffer_objects_["fbo_1"]->texture());
     textured_quad(w,h,true);
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    /*
+    //you may want to add code here
     // step 1
     framebuffer_objects_["fbo_2"]->bind();
-    shader_programs_["brightpass"]->bind();
+    //shader_programs_["brightpass"]->bind();
     glBindTexture(GL_TEXTURE_2D, framebuffer_objects_["fbo_1"]->texture());
     textured_quad(w,h,true);
     shader_programs_["brightpass"]->release();
@@ -289,6 +292,7 @@ void DrawEngine::draw_frame(float time,int w,int h) {
         glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D,0);
      }
+     */
 }
 
 /**
@@ -335,19 +339,32 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glEnable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["refract"]->bind();
+    shader_programs_["refract"]->setUniformValue("time", time);
     shader_programs_["refract"]->setUniformValue("CubeMap",GL_TEXTURE0);
+
+    glCallList(models_["grid"].idx);
+
+    /*
     glPushMatrix();
     glTranslatef(-1.25f,0.f,0.f);
     glCallList(models_["dragon"].idx);
     glPopMatrix();
+    */
+
     shader_programs_["refract"]->release();
+
+    /*
     shader_programs_["reflect"]->bind();
     shader_programs_["reflect"]->setUniformValue("CubeMap",GL_TEXTURE0);
+
     glPushMatrix();
     glTranslatef(1.25f,0.f,0.f);
     glCallList(models_["dragon"].idx);
     glPopMatrix();
+
     shader_programs_["reflect"]->release();
+    */
+
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
