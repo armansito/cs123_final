@@ -8,11 +8,11 @@ void main()
 	vec4 pos = gl_Vertex;
 	
 	float dist = sqrt(pos.x * pos.x + pos.z * pos.z);
-	pos.y = sin(12.0 * dist + time / 250) * 0.1;
+	pos.y = sin(12.0 * dist + time / 250.0) * 0.1;
 	
 	// ripple calculation
 	dist = sqrt((pos.x - ripple.x)*(pos.x - ripple.x) + (pos.z - ripple.z)*(pos.z - ripple.z));
-	pos.y = pos.y + sin(dist - time / 250) ;
+	pos.y = pos.y + sin(dist - time / 250.0) ;
 
 	gl_Position = gl_ModelViewProjectionMatrix * pos;		
 
