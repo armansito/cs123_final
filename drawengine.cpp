@@ -336,6 +336,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["refract"]->bind();
     shader_programs_["refract"]->setUniformValue("CubeMap",GL_TEXTURE0);
+    glCallList(models_["grid"].idx);
     glPushMatrix();
     glTranslatef(-1.25f,0.f,0.f);
     glCallList(models_["dragon"].idx);
