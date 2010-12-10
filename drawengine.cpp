@@ -24,7 +24,7 @@
 #include <QtOpenGL/QGLShaderProgram>
 #include <QtOpenGL/QGLFramebufferObject>
 #else
-#define ROOT_PATH
+#define ROOT_PATH "../cs123_final/"
 #include <qgl.h>
 #include <QGLContext>
 #include <QGLShaderProgram>
