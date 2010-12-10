@@ -7,7 +7,7 @@ void main()
 	vec4 pos = gl_Vertex;
 	
 	float dist = sqrt(pos.x * pos.x + pos.z * pos.z);
-	pos.y = sin(12.0 * dist + time / 500) * 0.1;
+	pos.y = sin(12.0 * dist + time / 250) * 0.1;
 
 	gl_Position = gl_ModelViewProjectionMatrix * pos;		
 

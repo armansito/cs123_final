@@ -7,11 +7,15 @@ void main (void)
 	vec3 N = normalize(normal);
 	vec3 L = normalize(lightDir);
 	float lambertTerm = dot(N,L);
+	
+	final_color += textureCube( CubeMap, r);
+
+	/*
 	if(lambertTerm > 0.0)
 	{
 		// Specular
-		final_color += textureCube( CubeMap, r);
 	}
+	*/
 	
 	gl_FragColor = final_color;
 	//gl_FragColor = vec4(255, 0, 0, 255);	

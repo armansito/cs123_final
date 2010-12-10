@@ -39,6 +39,8 @@ extern "C"{
     extern void APIENTRY glActiveTexture (GLenum);
 }
 
+#define WATER_WIDTH (10.f)
+
 /**
   @paragraph DrawEngine ctor.  Expects a Valid OpenGL context and the viewport's current
   width and height.  Initializes the draw engine.  Loads models,textures,shaders,
@@ -107,7 +109,7 @@ void DrawEngine::load_models() {
     //Create grid
     models_["grid"].idx = glGenLists(1);
     glNewList(models_["grid"].idx,GL_COMPILE);
-    float r = 10.f, dim = 50, delta = r * 2 / dim;
+    float r = WATER_WIDTH, dim = 50, delta = r * 2 / dim;
     for(int y = 0; y < dim; ++y) {
         glBegin(GL_QUAD_STRIP);
         for(int x = 0; x <= dim; ++x) {
@@ -165,13 +167,13 @@ void DrawEngine::load_shaders() {
                                                        ROOT_PATH "shaders/reflect.frag");
     shader_programs_["reflect"]->link();
     cout << "\t \033[32mshaders/reflect\033[0m" << endl;
-    shader_programs_["refract"] = new QGLShaderProgram(context_);
-    shader_programs_["refract"]->addShaderFromSourceFile(QGLShader::Vertex,
-                                                       ROOT_PATH "shaders/refract.vert");
-    shader_programs_["refract"]->addShaderFromSourceFile(QGLShader::Fragment,
-                                                       ROOT_PATH "shaders/refract.frag");
-    shader_programs_["refract"]->link();
-    cout << "\t \033[32mshaders/refract\033[0m" << endl;
+    shader_programs_["water"] = new QGLShaderProgram(context_);
+    shader_programs_["water"]->addShaderFromSourceFile(QGLShader::Vertex,
+                                                       ROOT_PATH "shaders/water.vert");
+    shader_programs_["water"]->addShaderFromSourceFile(QGLShader::Fragment,
+                                                       ROOT_PATH "shaders/water.frag");
+    shader_programs_["water"]->link();
+    cout << "\t \033[32mshaders/water\033[0m" << endl;
     shader_programs_["brightpass"] = new QGLShaderProgram(context_);
     shader_programs_["brightpass"]->addShaderFromSourceFile(QGLShader::Fragment,
                                                        ROOT_PATH "shaders/brightpass.frag");
@@ -338,9 +340,9 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glCallList(models_["skybox"].idx);
     glEnable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
-    shader_programs_["refract"]->bind();
-    shader_programs_["refract"]->setUniformValue("time", time);
-    shader_programs_["refract"]->setUniformValue("CubeMap",GL_TEXTURE0);
+    shader_programs_["water"]->bind();
+    shader_programs_["water"]->setUniformValue("time", time);
+    shader_programs_["water"]->setUniformValue("CubeMap",GL_TEXTURE0);
 
     glCallList(models_["grid"].idx);
 
@@ -351,7 +353,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glPopMatrix();
     */
 
-    shader_programs_["refract"]->release();
+    shader_programs_["water"]->release();
 
     /*
     shader_programs_["reflect"]->bind();
