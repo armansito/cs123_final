@@ -27,4 +27,3 @@ HEADERS  += MainWindow.h \
 FORMS    += MainWindow.ui
 
 RESOURCES +=
-

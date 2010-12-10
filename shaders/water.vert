@@ -1,5 +1,5 @@
 uniform float time;
-varying vec3 normal, lightDir, r, I;
+varying vec3 normal, lightDir, r;
 const vec3 L = vec3(0.,0.,1.);
 
 void main()
@@ -17,7 +17,7 @@ void main()
 	vec4 eyeVec = gl_ProjectionMatrixInverse*vec4(0,0,-1,0);
 	
 	normal = normalize( gl_NormalMatrix * gl_Normal );
-	I = normalize(vVertex - eyeVec.xyz); // Eye to vertex
+	vec3 I = normalize(vVertex - eyeVec.xyz); // Eye to vertex
  	r = refract(I,normal, 0.9);
 
 }

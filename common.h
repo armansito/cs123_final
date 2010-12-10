@@ -133,6 +133,9 @@ inline std::ostream& operator<<(std::ostream& os, const float3& f) {
 }
 
 struct float2 {
+
+    float2(float v0 = 0, float v1 = 0) : x(v0), y(v1) { }
+
     union {
         struct {
             float x, y;

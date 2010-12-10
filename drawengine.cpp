@@ -41,6 +41,8 @@ extern "C"{
 
 // this is the width of the big water square.
 #define WATER_WIDTH (100)
+#define LOG(s) cout << s << endl;
+
 
 /**
   @paragraph DrawEngine ctor.  Expects a Valid OpenGL context and the viewport's current
@@ -423,6 +425,19 @@ void DrawEngine::perspective_camera(int w,int h) {
     glLoadIdentity();
 }
 
+float3 DrawEngine::getMouseRay(const float2 &mouse, const Camera &camera)
+{
+    int viewport[4];
+    double worldX, worldY, worldZ, modelviewMatrix[16], projectionMatrix[16];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelviewMatrix);
+    glGetDoublev(GL_PROJECTION_MATRIX, projectionMatrix);
+    gluUnProject(mouse.x, viewport[3] - mouse.y - 1, 1,
+                 modelviewMatrix, projectionMatrix, viewport,
+                 &worldX, &worldY, &worldZ);
+    return (float3(worldX, worldY, worldZ) - camera.eye).getNormalized();
+}
+
 /**
   @paragraph Called to switch to an orthogonal OpenGL camera.
   Useful for rending a textured quad across the whole screen.
@@ -479,6 +494,16 @@ void DrawEngine::mouse_drag_event(float2 p0,float2 p1) {
 void DrawEngine::mouse_wheel_event(int dx) {
     if((camera_.center - camera_.eye).getMagnitude() > .5 || dx < 0)
         camera_.eye += (camera_.center - camera_.eye).getNormalized() * dx * .005;
+}
+
+void DrawEngine::mouse_press_event(float2 point)
+{
+    float3 R = getMouseRay(point, camera_);
+    float3 p = camera_.eye;
+    float3 intersect;
+    float t = -p.y / R.y;
+    intersect = p + R*t;
+    LOG(intersect);
 }
 
 /**
