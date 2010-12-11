@@ -209,12 +209,12 @@ void DrawEngine::load_shaders() {
 void DrawEngine::load_textures() {
     cout << "\033[1mLoading textures...\033[0m" << endl;
     QList<QFile *> fileList;
-    fileList.append(new QFile(ROOT_PATH "textures/astra/posx.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/astra/negx.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/astra/posy.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/astra/negy.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/astra/posz.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/astra/negz.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/sky/posx.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/sky/negx.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/sky/posy.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/sky/negy.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/sky/posz.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/sky/negz.jpg"));
     textures_["cube_map_1"] = load_cube_map(fileList);
 }
 /**
