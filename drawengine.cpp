@@ -1,6 +1,4 @@
 /**
-  A simple OpenGL drawing engine.
-
   @author psastras
 **/
 
@@ -75,7 +73,7 @@ DrawEngine::DrawEngine(const QGLContext *context,int w,int h) : context_(context
     //init member variables
     previous_time_ = 0.0f;
     camera_.center.x = 0.f,camera_.center.y = 0.f,camera_.center.z = 0.f;
-    camera_.eye.x = 0.f,camera_.eye.y = 5.0f,camera_.eye.z = -5.f;
+    camera_.eye.x = 0.f,camera_.eye.y = 10.f,camera_.eye.z = -10.f;
     camera_.up.x = 0.f,camera_.up.y = 1.f,camera_.up.z = 0.f;
     camera_.near = 0.1f,camera_.far = sqrt(6)*EXTENT;
     camera_.fovy = 60.f;
@@ -112,14 +110,13 @@ DrawEngine::~DrawEngine() {
 **/
 void DrawEngine::load_models() {
     cout << "\033[1mLoading models...\033[0m" << endl;
-    models_["dragon"].model = glmReadOBJ(ROOT_PATH "models/xyzrgb_dragon.obj");
-    glmUnitize(models_["dragon"].model);
-    models_["dragon"].idx = glmList(models_["dragon"].model,GLM_SMOOTH);
-    cout << "\t \033[32m/course/cs123/data/mesh/xyzrgb_dragon_old.obj\033[0m" << endl;
+    models_["yacht"].model = glmReadOBJ(ROOT_PATH "models/yacht.obj");
+    glmUnitize(models_["yacht"].model);
+    models_["yacht"].idx = glmList(models_["yacht"].model,GLM_SMOOTH);
+    cout << "\t \033[32m/course/cs123/data/mesh/yacht.obj\033[0m" << endl;
 
     //Create grid
     models_["grid"].idx = glGenLists(1);
-
     glNewList(models_["grid"].idx,GL_COMPILE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -309,7 +306,7 @@ void DrawEngine::draw_frame(float time,int w,int h) {
         textured_quad(w * scales[i],h * scales[i],false);
         glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D,0);
-     }
+    }
 
 }
 
@@ -402,6 +399,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
         other_vals[j++] = r._energy;
         other_vals[j++] = r._speed;
     }
+    glEnable(GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_TEXTURE_CUBE_MAP);
@@ -420,17 +418,23 @@ void DrawEngine::render_scene(float time,int w,int h) {
 
     glCallList(models_["grid"].idx);
 
-    /*
-    glPushMatrix();
-    glTranslatef(-1.25f,0.f,0.f);
-    glCallList(models_["dragon"].idx);
-    glPopMatrix();
-    */
-
     shader_programs_["water"]->release();
 
     delete[] ripples;
     delete[] other_vals;
+
+    if (settings.show_boat) {
+        float d = 12;
+        float x = time/2000.f;
+        boat_pos = float3(d*sin(x),0,d*cos(x));
+        glPushMatrix();
+        glTranslatef(boat_pos.x,5,boat_pos.z);
+        glRotatef(x*55,0,1,0);
+        glScalef(6,6,6);
+        glCallList(models_["yacht"].idx);
+        glPopMatrix();
+        addRipple(boat_pos);
+    }
 
     /*
     shader_programs_["reflect"]->bind();\

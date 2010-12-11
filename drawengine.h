@@ -33,6 +33,7 @@ struct Camera {
 struct Ripple {
     float3 _position;
     QTime *_time;
+    float _timeout;
     float _amplitude;
     float _speed;
     float _energy;
@@ -77,6 +78,8 @@ protected:
     float3 getMouseRay(const float2 &mouse, const Camera &camera);
     void updateRipples();
     void addRipple(float3 p);
+
+    float3 boat_pos;
 
     //member variables
     QHash<QString, QGLShaderProgram *>          shader_programs_; ///hash map of all shader programs
