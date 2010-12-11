@@ -9,7 +9,7 @@ uniform vec2 other_vals[50];
 
 varying vec3 normal, view, lightDir;
 
-const vec4 light = vec4(20, 20, 0, 1);
+const vec4 light = vec4(-40, 50, 40, 1);
 const float PI = 3.141593;
 
 const float AMBIENT_AMPLITUDE = 0.2;

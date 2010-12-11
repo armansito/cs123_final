@@ -41,7 +41,7 @@ extern "C"{
 
 // this is the width of the big water square.
 #define EXTENT 100
-#define WATER_WIDTH (90)
+#define WATER_WIDTH (150)
 #define VERTICES_PER_UNIT (1)
 
 //#define LOG(s) cout << s << endl;
@@ -76,7 +76,7 @@ DrawEngine::DrawEngine(const QGLContext *context,int w,int h) : context_(context
     //init member variables
     previous_time_ = 0.0f;
     camera_.center.x = 0.f,camera_.center.y = 0.f,camera_.center.z = 0.f;
-    camera_.eye.x = 0.f,camera_.eye.y = 10.f,camera_.eye.z = -10.f;
+    camera_.eye.x = 0.f,camera_.eye.y = 10.f,camera_.eye.z = 10.f;
     camera_.up.x = 0.f,camera_.up.y = 1.f,camera_.up.z = 0.f;
     camera_.near = 0.1f,camera_.far = sqrt(6)*EXTENT;
     camera_.fovy = 60.f;
@@ -209,12 +209,12 @@ void DrawEngine::load_shaders() {
 void DrawEngine::load_textures() {
     cout << "\033[1mLoading textures...\033[0m" << endl;
     QList<QFile *> fileList;
-    fileList.append(new QFile(ROOT_PATH "textures/sky/posx.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/sky/negx.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/sky/posy.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/sky/negy.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/sky/posz.jpg"));
-    fileList.append(new QFile(ROOT_PATH "textures/sky/negz.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/football/posx.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/football/negx.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/football/posy.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/football/negy.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/football/posz.jpg"));
+    fileList.append(new QFile(ROOT_PATH "textures/football/negz.jpg"));
     textures_["cube_map_1"] = load_cube_map(fileList);
 }
 /**
