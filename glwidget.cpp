@@ -84,6 +84,6 @@ void GLWidget::render_text() {
        prev_fps_ *= 0.95;
        prev_fps_ += draw_engine_->fps() * 0.05;
 
-    } this->renderText(10.0, 20.0, "FPS: " + QString::number((int)(prev_fps_)), f);
-    this->renderText(10.0, 35.0, "S: YOUR MOM", f);
+    } //this->renderText(10.0, 20.0, "FPS: " + QString::number((int)(prev_fps_)), f);
+    //this->renderText(10.0, 35.0, "S: YOUR MOM", f);
 }

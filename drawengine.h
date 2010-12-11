@@ -33,6 +33,9 @@ struct Camera {
 struct Ripple {
     float3 _position;
     QTime *_time;
+    float _amplitude;
+    float _speed;
+    float _energy;
 };
 
 class DrawEngine {

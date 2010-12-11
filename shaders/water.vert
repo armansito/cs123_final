@@ -1,6 +1,7 @@
 uniform float time, neighborDist;
 uniform int ripples_count;
 uniform vec4 ripples[50];
+uniform vec2 other_vals[50]; // x: energy y: speed
 
 varying vec3 normal, view, lightDir;
 
@@ -36,7 +37,7 @@ void main() {
 	//pos.y = waveHeight(pos.x, pos.z);
 	
 	float dist = sqrt(pos.x * pos.x + pos.z * pos.z);
-	pos.y = sin(12.0 * dist + time / 250.0) * 0.2;
+	//pos.y = sin(12.0 * dist + time / 250.0) * 0.2;
 
 	// ripple calculation
 	vec4 ripple;
