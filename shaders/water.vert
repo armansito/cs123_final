@@ -18,16 +18,19 @@ const float AMBIENT_ENERGY = 10000000.0;
 const vec2 AMBIENT_CENTER = vec2(-1.0, -2.5);
 
 void main() {
-     	vec4 pos = gl_Vertex;
-
+  vec4 pos = gl_Vertex;
+	float dist = sqrt (pos.x*pos.x+pos.y*pos.y+pos.z*pos.z);
+	
 	// ripple and normal calculation
 	pos.y = 0.0;	
 	vec3 accNorm = vec3(0, -1, 0);
+	float argument;
+	vec2 dVector;
 	for (int i = 0; i < ripples_count; i++) {
-	    vec2 dVector = vec2(pos.x - ripples[i].x, pos.z - ripples[i].y);
-	    float dist = sqrt(dVector.x * dVector.x + dVector.y * dVector.y);
+	    dVector = vec2(pos.x - ripples[i].x, pos.z - ripples[i].y);
+	    dist = sqrt(dVector.x * dVector.x + dVector.y * dVector.y);
 
-	    float argument = dist - ripples[i].w * other_vals[i].y;
+	    argument = dist - ripples[i].w * other_vals[i].y;
 	    if (argument <= 0.0) {
 	       float dampening = exp(-ripples[i].w / other_vals[i].x);
 

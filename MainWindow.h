@@ -14,6 +14,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void switchBoat();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -145,6 +145,19 @@
      </property>
     </widget>
    </widget>
+   <widget class="QRadioButton" name="boatButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>105</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show Boat</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
