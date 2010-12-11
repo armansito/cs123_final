@@ -440,7 +440,10 @@ void DrawEngine::render_scene(float time,int w,int h) {
         glTranslatef(boat_pos.x,5,boat_pos.z);
         glRotatef(x*55,0,1,0);
         glScalef(6,6,6);
-        glCallList(models_["yacht"].idx);
+        GLUquadric *q = gluNewQuadric();
+        gluSphere(q,1.f,20,20);
+        //glCallList(models_["yacht"].idx);
+        gluDeleteQuadric(q);
         glPopMatrix();
         addRipple(boat_pos);
     }
