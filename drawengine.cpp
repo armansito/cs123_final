@@ -40,8 +40,8 @@ extern "C"{
 }
 
 // this is the width of the big water square.
-#define EXTENT 100
-#define WATER_WIDTH (100)
+#define EXTENT 150
+#define WATER_WIDTH (130)
 #define VERTICES_PER_SIDE (70)
 
 //#define LOG(s) cout << s << endl;
@@ -457,22 +457,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
         glCallList(models_["yacht"].idx);
         //gluDeleteQuadric(q);
         glPopMatrix();
-        static QTime timer = QTime::currentTime();
-        static int milliseconds = 0;
-
-        milliseconds += timer.restart();
-        if (milliseconds >= RIPPLE_DELAY) {
-            if (_ripples.size() < MAX_RIPPLES) {
-                Ripple r;
-                r._position = boat_pos;
-                r._amplitude = 0.1;
-                r._energy = 0.2;
-                r._speed = 100;
-                r._time = new QTime();
-                _ripples.push_back(r);
-                r._time->start();
-            }
-        }
+        addRipple(boat_pos);
     }
 
     /*
