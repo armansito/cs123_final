@@ -10,6 +10,9 @@
 #endif
 #include "glm.h"
 #include "common.h"
+#include <QVector3D>
+#include <vector>
+#include <QTime>
 
 class QGLContext;
 class QGLShaderProgram;
@@ -25,6 +28,11 @@ struct Model {
 struct Camera {
     float3 eye, center, up;
     float fovy, near, far;
+};
+
+struct Ripple {
+    float3 _position;
+    QTime *_time;
 };
 
 class DrawEngine {
@@ -62,7 +70,10 @@ protected:
     void create_fbos(int w, int h);
     void create_blur_kernel(int radius,int w,int h,GLfloat* kernel,GLfloat* offsets);
 
+    // shoots a ray from the screen to the object space
     float3 getMouseRay(const float2 &mouse, const Camera &camera);
+    void updateRipples();
+    void addRipple(float3 p);
 
     //member variables
     QHash<QString, QGLShaderProgram *>          shader_programs_; ///hash map of all shader programs
@@ -72,6 +83,8 @@ protected:
     const QGLContext                            *context_; ///the current OpenGL context to render to
     float                                       previous_time_, fps_; ///the previous time and the fps counter
     Camera                                      camera_; ///a simple camera struct
+    double modelviewMatrix[16], projectionMatrix[16]; // maintains the modelview and projection matrices
+    std::vector<Ripple> _ripples; // holds a list of ripples and their elapsed time
 };
 
 #endif // DRAWENGINE_H

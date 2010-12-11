@@ -22,7 +22,7 @@ void main (void) {
 	      nNormal *= -1.0;
 	}
 
-	vec3 reflected = reflect(vView, nNormal);
+	vec3 reflected = normalize(reflect(vView, nNormal));
 	vec4 flectColor = textureCube(CubeMap, reflected);
 
         vec3 refractedRed = refract(vView, nNormal, redEta);
@@ -34,11 +34,12 @@ void main (void) {
 	gl_FragColor = mix(flectColor, fractColor, BLEND);
 
 	// specular lighting
-	//	vec3 reflectedLight = normalize(reflect(light, nNormal));
+	//vec3 reflectedLight = normalize(reflect(light, nNormal));
 	float specular = max(dot(-1.0 * reflected, light), 0.0);
 	specular = pow(specular, SPECULAR_EXP) * SPECULAR_COEFF;
 
-	//	gl_FragColor += vec4(specular, specular, specular, specular);
+	gl_FragColor += vec4(specular, specular, specular, 1);
 
 	//	gl_FragColor += vec4(0, 0, 0.6, 1);
+	//	gl_FragColor = vec4(0, 0, 0, 1);
 }
