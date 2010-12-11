@@ -40,8 +40,8 @@ extern "C"{
 }
 
 // this is the width of the big water square.
-#define WATER_WIDTH (200)
-#define VERTICES_PER_UNIT (3)
+#define WATER_WIDTH (100)
+#define VERTICES_PER_UNIT (2)
 
 //#define LOG(s) cout << s << endl;
 #define LOG(s)
@@ -119,8 +119,8 @@ void DrawEngine::load_models() {
     models_["grid"].idx = glGenLists(1);
 
     glNewList(models_["grid"].idx,GL_COMPILE);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     float r = WATER_WIDTH / 2.f, dim = WATER_WIDTH * VERTICES_PER_UNIT, delta = r * 2 / dim;
     for(int y = 0; y < dim; ++y) {
         glBegin(GL_QUAD_STRIP);
@@ -139,7 +139,7 @@ void DrawEngine::load_models() {
     glNewList(models_["skybox"].idx,GL_COMPILE);
     //Be glad we wrote this for you...ugh.
     glBegin(GL_QUADS);
-    float fExtent = 100.f;
+    float fExtent = WATER_WIDTH / 2;
     glTexCoord3f(1.0f,-1.0f,-1.0f); glVertex3f(fExtent,-fExtent,-fExtent);
     glTexCoord3f(-1.0f,-1.0f,-1.0f);glVertex3f(-fExtent,-fExtent,-fExtent);
     glTexCoord3f(-1.0f,1.0f,-1.0f);glVertex3f(-fExtent,fExtent,-fExtent);

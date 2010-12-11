@@ -6,9 +6,9 @@ const float grnEta = 0.67;
 const float bluEta = 0.67;
 
 // amount of refraction
-const float BLEND = 0.6;
-const float SPECULAR_EXP = 4.0;
-const float SPECULAR_COEFF = 0.5;
+const float BLEND = 0.7;
+const float SPECULAR_EXP = 14.0;
+const float SPECULAR_COEFF = 0.6;
 
 void main (void) {
      	vec3 nNormal = normalize(normal);
@@ -19,7 +19,7 @@ void main (void) {
 	   // this is above water
 	} else {
 	   // this is under water; invert normal
-	      nNormal *= -1.0;
+	   // nNormal *= -1.0;
 	}
 
 	vec3 reflected = normalize(reflect(vView, nNormal));
@@ -35,11 +35,8 @@ void main (void) {
 
 	// specular lighting
 	//vec3 reflectedLight = normalize(reflect(light, nNormal));
-	float specular = max(dot(-1.0 * reflected, light), 0.0);
+	float specular = max(dot(1.0 * reflected, light), 0.0);
 	specular = pow(specular, SPECULAR_EXP) * SPECULAR_COEFF;
 
 	gl_FragColor += vec4(specular, specular, specular, 1);
-
-	//	gl_FragColor += vec4(0, 0, 0.6, 1);
-	//	gl_FragColor = vec4(0, 0, 0, 1);
 }
