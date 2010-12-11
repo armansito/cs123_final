@@ -113,9 +113,15 @@ DrawEngine::~DrawEngine() {
 **/
 void DrawEngine::load_models() {
     cout << "\033[1mLoading models...\033[0m" << endl;
-    models_["yacht"].model = glmReadOBJ(ROOT_PATH "models/yacht.obj");
+    models_["yacht"].model = glmReadOBJ(ROOT_PATH "models/yacht/yacht.obj");
     glmUnitize(models_["yacht"].model);
-    models_["yacht"].idx = glmList(models_["yacht"].model,GLM_SMOOTH);
+    glEnable(GL_LIGHTING);
+    glNewList(models_["yacht"].idx = glGenLists(1),GL_COMPILE);
+    glmFacetNormals(models_["yacht"].model);
+    glmVertexNormals(models_["yacht"].model, 90.0);
+    glmDraw(models_["yacht"].model,GLM_SMOOTH | GLM_TEXTURE);
+    glEndList();
+    glDisable(GL_LIGHTING);
     cout << "\t \033[32m/course/cs123/data/mesh/yacht.obj\033[0m" << endl;
 
     //Create grid
@@ -432,6 +438,10 @@ void DrawEngine::render_scene(float time,int w,int h) {
     delete[] ripples;
     delete[] other_vals;
 
+    glDisable(GL_DEPTH_TEST);
+    glBindTexture(GL_TEXTURE_CUBE_MAP,0);
+    glDisable(GL_TEXTURE_CUBE_MAP);
+
     if (settings.show_boat) {
         float d = 12;
         float x = time/2000.f;
@@ -460,9 +470,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     shader_programs_["reflect"]->release();
     */
 
-    glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_CUBE_MAP,0);
-    glDisable(GL_TEXTURE_CUBE_MAP);
+
 }
 
 /**
