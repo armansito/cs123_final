@@ -15,14 +15,18 @@ SOURCES += main.cpp\
     targa.cpp \
     glwidget.cpp \
     glm.cpp \
-    drawengine.cpp
+    drawengine.cpp \
+    Databinding.cpp \
+    Settings.cpp
 
 HEADERS  += MainWindow.h \
     targa.h \
     glwidget.h \
     glm.h \
     drawengine.h \
-    common.h
+    common.h \
+    Settings.h \
+    Databinding.h
 
 FORMS    += MainWindow.ui
 

@@ -32,6 +32,7 @@
 #include <GL/glu.h>
 #include <GL/glext.h>
 #endif
+#include "Settings.h"
 using std::cout;
 using std::endl;
 
@@ -338,6 +339,9 @@ void DrawEngine::addRipple(float3 p)
     if (_ripples.size() < MAX_RIPPLES) {
         Ripple r;
         r._position = p;
+        r._amplitude = settings.ripple_amplitude;
+        r._energy = settings.ripple_energy;
+        r._speed = settings.ripple_speed;
         r._time = new QTime();
         _ripples.push_back(r);
         r._time->start();
@@ -383,14 +387,19 @@ void DrawEngine::render_scene(float time,int w,int h) {
     updateRipples();
     LOG(_ripples.size());
     GLfloat *ripples = new GLfloat[_ripples.size()*4];
+    GLfloat *other_vals = new GLfloat[_ripples.size()*2];
     Ripple r;
     int i = 0;
+    int j = 0;
     for (unsigned int it = 0; it < _ripples.size(); it++) {
         r = _ripples[it];
         ripples[i++] = r._position.x;
-        ripples[i++] = r._position.y;
         ripples[i++] = r._position.z;
+        ripples[i++] = r._amplitude;
         ripples[i++] = (float)r._time->elapsed();
+
+        other_vals[j++] = r._energy;
+        other_vals[j++] = r._speed;
     }
     glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -404,6 +413,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     shader_programs_["water"]->setUniformValue("time", time);
     shader_programs_["water"]->setUniformValue("ripples_count",(GLuint)_ripples.size());
     shader_programs_["water"]->setUniformValueArray("ripples",ripples,_ripples.size()*4,4);
+    shader_programs_["water"]->setUniformValueArray("other_vals",other_vals,_ripples.size()*2,2);
     shader_programs_["water"]->setUniformValue("CubeMap",GL_TEXTURE0);
 
     glCallList(models_["grid"].idx);
@@ -417,7 +427,8 @@ void DrawEngine::render_scene(float time,int w,int h) {
 
     shader_programs_["water"]->release();
 
-    delete [] ripples;
+    delete[] ripples;
+    delete[] other_vals;
 
     /*
     shader_programs_["reflect"]->bind();\

@@ -6,7 +6,7 @@ const float grnEta = 0.67;
 const float bluEta = 0.67;
 
 // amount of refraction
-const float BLEND = 0.7;
+const float BLEND = 0.9;
 const float SPECULAR_EXP = 14.0;
 const float SPECULAR_COEFF = 0.6;
 

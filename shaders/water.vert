@@ -4,6 +4,9 @@ uniform int ripples_count;
 uniform vec4 ripples[50];
 // x: x-coordinate; y: z-coordinate; z: amplitude; w: elapsed time
 
+uniform vec2 other_vals[50];
+// x: energy y: speed
+
 varying vec3 normal, view, lightDir;
 
 const vec4 light = vec4(0, 20, 0, 1);
@@ -24,17 +27,17 @@ void main() {
 	pos.y = 0.0;	
 	vec3 accNorm = vec3(0, 1, 0);
 	for (int i = 0; i < ripples_count; i++) {
-	    vec2 dVector = vec2(pos.x - ripples[i].x, pos.z - ripples[i].z);
+	    vec2 dVector = vec2(pos.x - ripples[i].x, pos.z - ripples[i].y);
 	    float dist = sqrt(dVector.x * dVector.x + dVector.y * dVector.y);
 
 	    float argument = dist - ripples[i].w * SPEED;
 	    if (argument <= 0.0) {
 	       float dampening = exp(-ripples[i].w / ENERGY);
 
-	       pos.y += sin(argument) * AMPLITUDE * dampening;
+	       pos.y += sin(argument) * ripples[i].z * dampening;
 
-	       accNorm.x += 2.0 * AMPLITUDE * dVector.x * dampening * cos(argument) / dist;
-	       accNorm.z += 2.0 * AMPLITUDE * dVector.y * dampening * cos(argument) / dist;
+	       accNorm.x += 2.0 * ripples[i].z * dVector.x * dampening * cos(argument) / dist;
+	       accNorm.z += 2.0 * ripples[i].z * dVector.y * dampening * cos(argument) / dist;
 	    }
 	}
 
