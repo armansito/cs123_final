@@ -40,7 +40,9 @@ extern "C"{
 }
 
 // this is the width of the big water square.
-#define WATER_WIDTH (100)
+#define WATER_WIDTH (200)
+#define VERTICES_PER_UNIT (3)
+
 #define LOG(s) cout << s << endl;
 
 
@@ -69,7 +71,7 @@ DrawEngine::DrawEngine(const QGLContext *context,int w,int h) : context_(context
     camera_.center.x = 0.f,camera_.center.y = 0.f,camera_.center.z = 0.f;
     camera_.eye.x = 0.f,camera_.eye.y = 5.0f,camera_.eye.z = -5.f;
     camera_.up.x = 0.f,camera_.up.y = 1.f,camera_.up.z = 0.f;
-    camera_.near = 0.1f,camera_.far = 100.f;
+    camera_.near = 0.1f,camera_.far = 400.f;
     camera_.fovy = 60.f;
 
     //init resources - so i heard you like colored text?
@@ -115,10 +117,11 @@ void DrawEngine::load_models() {
     glNewList(models_["grid"].idx,GL_COMPILE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    float r = WATER_WIDTH / 2.f, dim = WATER_WIDTH, delta = r * 2 / dim;
+    float r = WATER_WIDTH / 2.f, dim = WATER_WIDTH * VERTICES_PER_UNIT, delta = r * 2 / dim;
     for(int y = 0; y < dim; ++y) {
         glBegin(GL_QUAD_STRIP);
         for(int x = 0; x <= dim; ++x) {
+            glNormal3f(0, 1, 0);
             glVertex3f(x * delta - r, 0, y * delta - r);
             glVertex3f(x * delta - r, 0, (y + 1) * delta - r);
         }
@@ -132,7 +135,7 @@ void DrawEngine::load_models() {
     glNewList(models_["skybox"].idx,GL_COMPILE);
     //Be glad we wrote this for you...ugh.
     glBegin(GL_QUADS);
-    float fExtent = 50.f;
+    float fExtent = 100.f;
     glTexCoord3f(1.0f,-1.0f,-1.0f); glVertex3f(fExtent,-fExtent,-fExtent);
     glTexCoord3f(-1.0f,-1.0f,-1.0f);glVertex3f(-fExtent,-fExtent,-fExtent);
     glTexCoord3f(-1.0f,1.0f,-1.0f);glVertex3f(-fExtent,fExtent,-fExtent);
@@ -348,6 +351,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     //glEnable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
+    shader_programs_["water"]->setUniformValue("neighborDist", 1.f / VERTICES_PER_UNIT);
     shader_programs_["water"]->setUniformValue("time", time);
     shader_programs_["water"]->setUniformValue("CubeMap",GL_TEXTURE0);
 
@@ -418,11 +422,16 @@ void DrawEngine::perspective_camera(int w,int h) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(camera_.fovy,ratio,camera_.near,camera_.far);
+    /*
     gluLookAt(camera_.eye.x,camera_.eye.y,camera_.eye.z,
               camera_.center.x,camera_.center.y,camera_.center.z,
               camera_.up.x,camera_.up.y,camera_.up.z);
+              */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    gluLookAt(camera_.eye.x,camera_.eye.y,camera_.eye.z,
+              camera_.center.x,camera_.center.y,camera_.center.z,
+              camera_.up.x,camera_.up.y,camera_.up.z);
 }
 
 float3 DrawEngine::getMouseRay(const float2 &mouse, const Camera &camera)

@@ -1,37 +1,44 @@
 uniform samplerCube CubeMap;
-varying vec3 normal, lightDir, r;
+varying vec3 normal, view, lightDir;
 
-void main (void)
-{
-	vec4 final_color = textureCube( CubeMap, r);
-	vec3 N = normalize(normal);
-	vec3 L = normalize(lightDir);
-	float lambertTerm = dot(N,L);
-	
-	final_color += textureCube( CubeMap, r);
+const float redEta = 0.67;
+const float grnEta = 0.67;
+const float bluEta = 0.67;
 
-	/*
-	if(lambertTerm > 0.0)
-	{
-		// Specular
+// amount of refraction
+const float BLEND = 0.6;
+const float SPECULAR_EXP = 4.0;
+const float SPECULAR_COEFF = 0.5;
+
+void main (void) {
+     	vec3 nNormal = normalize(normal);
+	vec3 light = normalize(lightDir);
+	vec3 vView = view;
+
+	if (dot(nNormal, vView) < 0.0) {
+	   // this is above water
+	} else {
+	   // this is under water; invert normal
+	      nNormal *= -1.0;
 	}
-	*/
 
-	gl_FragColor = final_color;
-
-	/*	
-	float redEta = 0.84;
-	float grnEta = 0.87; 
-	float bluEta = 0.91;	
-
-
-	vec3 reflected = reflect(I, N);
-	vec3 refractedRed = refract(I, N, redEta);
-	vec3 refractedGrn = refract(I, N, grnEta);
-	vec3 refractedBlu = refract(I, N, bluEta);
-	vec3 refracted = vec3(refractedRed[0], refractedGrn[1], refractedBlu[2]);
-
+	vec3 reflected = reflect(vView, nNormal);
 	vec4 flectColor = textureCube(CubeMap, reflected);
+
+        vec3 refractedRed = refract(vView, nNormal, redEta);
+	vec3 refractedGrn = refract(vView, nNormal, grnEta);
+	vec3 refractedBlu = refract(vView, nNormal, bluEta);
+	vec3 refracted = vec3(refractedRed[0], refractedGrn[1], refractedBlu[2]);
 	vec4 fractColor = textureCube(CubeMap, refracted);
-	*/
+
+	gl_FragColor = mix(flectColor, fractColor, BLEND);
+
+	// specular lighting
+	//	vec3 reflectedLight = normalize(reflect(light, nNormal));
+	float specular = max(dot(-1.0 * reflected, light), 0.0);
+	specular = pow(specular, SPECULAR_EXP) * SPECULAR_COEFF;
+
+	//	gl_FragColor += vec4(specular, specular, specular, specular);
+
+	//	gl_FragColor += vec4(0, 0, 0.6, 1);
 }
