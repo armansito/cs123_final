@@ -40,15 +40,15 @@ extern "C"{
 }
 
 // this is the width of the big water square.
-#define EXTENT 50
-#define WATER_WIDTH (125)
-#define VERTICES_PER_SIDE (75)
+#define EXTENT 100
+#define WATER_WIDTH (100)
+#define VERTICES_PER_SIDE (70)
 
 //#define LOG(s) cout << s << endl;
 #define LOG(s)
 
 #define MAX_RIPPLES 50
-#define RIPPLE_DEATH_TIME 8000
+#define RIPPLE_DEATH_TIME 4000
 
 #define RIPPLE_DELAY 250
 
@@ -76,7 +76,7 @@ DrawEngine::DrawEngine(const QGLContext *context,int w,int h) : context_(context
     //init member variables
     previous_time_ = 0.0f;
     camera_.center.x = 0.f,camera_.center.y = 0.f,camera_.center.z = 0.f;
-    camera_.eye.x = 0.f,camera_.eye.y = 10.f,camera_.eye.z = 10.f;
+    camera_.eye.x = 20.f,camera_.eye.y = 10.f,camera_.eye.z = -20.f;
     camera_.up.x = 0.f,camera_.up.y = 1.f,camera_.up.z = 0.f;
     camera_.near = 0.1f,camera_.far = sqrt(3)*2*EXTENT;
     camera_.fovy = 60.f;
@@ -457,7 +457,22 @@ void DrawEngine::render_scene(float time,int w,int h) {
         glCallList(models_["yacht"].idx);
         //gluDeleteQuadric(q);
         glPopMatrix();
-        addRipple(boat_pos);
+        static QTime timer = QTime::currentTime();
+        static int milliseconds = 0;
+
+        milliseconds += timer.restart();
+        if (milliseconds >= RIPPLE_DELAY) {
+            if (_ripples.size() < MAX_RIPPLES) {
+                Ripple r;
+                r._position = boat_pos;
+                r._amplitude = 0.1;
+                r._energy = 0.2;
+                r._speed = 100;
+                r._time = new QTime();
+                _ripples.push_back(r);
+                r._time->start();
+            }
+        }
     }
 
     /*

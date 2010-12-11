@@ -15,14 +15,14 @@ MainWindow::MainWindow(QWidget *parent) :
     BIND( FloatBinding::bindSliderAndTextbox(ui->energySlider, ui->energyDisplay, settings.ripple_energy, 300, 1000) )
     BIND( FloatBinding::bindSliderAndTextbox(ui->speedSlider, ui->speedDisplay, settings.ripple_speed, 1, 5) )
     connect(ui->boatButton,SIGNAL(toggled(bool)),this,SLOT(switchBoat()));
-    settings.ripple_amplitude = 0.1;
-    settings.ripple_energy = 700;
-    settings.ripple_speed = 2;
+    settings.ripple_amplitude = 0.65;
+    settings.ripple_energy = 461;
+    settings.ripple_speed = 2.57;
     settings.show_boat = false;
 
-    ui->amplitudeDisplay->setText(QString("0.1"));
-    ui->energyDisplay->setText(QString("700"));
-    ui->speedDisplay->setText(QString("1"));
+    ui->amplitudeDisplay->setText(QString("0.65"));
+    ui->energyDisplay->setText(QString("461"));
+    ui->speedDisplay->setText(QString("2.57"));
 }
 
 MainWindow::~MainWindow() {
