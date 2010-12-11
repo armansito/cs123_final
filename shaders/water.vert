@@ -18,10 +18,10 @@ const float AMBIENT_ENERGY = 10000000.0;
 const vec2 AMBIENT_CENTER = vec2(-1.0, -2.5);
 
 void main() {
-  vec4 pos = gl_Vertex;
-	float dist = sqrt (pos.x*pos.x+pos.y*pos.y+pos.z*pos.z);
+      vec4 pos = gl_Vertex;
 	
 	// ripple and normal calculation
+	float dist;
 	pos.y = 0.0;	
 	vec3 accNorm = vec3(0, -1, 0);
 	float argument;
@@ -43,7 +43,7 @@ void main() {
 
 	// this is the background noise
 	vec2 distVec = vec2(pos.x - AMBIENT_CENTER.x, pos.z - AMBIENT_CENTER.y);
-	float dist = sqrt(distVec.x * distVec.x + distVec.y * distVec.y);
+	dist = sqrt(distVec.x * distVec.x + distVec.y * distVec.y);
 
 	float arg = dist - time * AMBIENT_SPEED;
 	float dampen = exp(-time / AMBIENT_ENERGY);

@@ -35,7 +35,7 @@ void main (void) {
 	vec4 fractColor = textureCube(CubeMap, refracted);
 
 	const float R_0 = 0.4;
-	float fresnel = R_0 + (1 - R_0) * pow((1 - dot(-normalize(vView), nNormal)), 5.0);
+	float fresnel = R_0 + (1.0 - R_0) * pow((1.0 - dot(-normalize(vView), nNormal)), 5.0);
 	fresnel = max(0.0, min(fresnel, 1.0));
 
 	gl_FragColor = mix(fractColor, flectColor, fresnel);
