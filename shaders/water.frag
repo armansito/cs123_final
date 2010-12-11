@@ -6,9 +6,9 @@ const float grnEta = 0.67;
 const float bluEta = 0.67;
 
 // amount of refraction
-const float BLEND = 0.9;
-const float SPECULAR_EXP = 14.0;
-const float SPECULAR_COEFF = 0.6;
+const float BLEND = 0.7;
+const float SPECULAR_EXP = 24.0;
+const float SPECULAR_COEFF = 0.8;
 
 void main (void) {
      	vec3 nNormal = normalize(normal);
@@ -19,7 +19,7 @@ void main (void) {
 	   // this is above water
 	} else {
 	   // this is under water; invert normal
-	   // nNormal *= -1.0;
+	   nNormal *= -1.0;
 	}
 
 	vec3 reflected = normalize(reflect(vView, nNormal));
@@ -28,7 +28,7 @@ void main (void) {
         vec3 refractedRed = refract(vView, nNormal, redEta);
 	vec3 refractedGrn = refract(vView, nNormal, grnEta);
 	vec3 refractedBlu = refract(vView, nNormal, bluEta);
-	vec3 refracted = vec3(refractedRed[0], refractedGrn[1], refractedBlu[2]);
+	vec3 refracted = normalize(vec3(refractedRed[0], refractedGrn[1], refractedBlu[2]));
 	vec4 fractColor = textureCube(CubeMap, refracted);
 
 	gl_FragColor = mix(flectColor, fractColor, BLEND);

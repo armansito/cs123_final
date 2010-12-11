@@ -341,7 +341,7 @@ void DrawEngine::addRipple(float3 p)
         r._position = p;
         r._amplitude = settings.ripple_amplitude;
         r._energy = settings.ripple_energy;
-        r._speed = settings.ripple_speed / 10.f;
+        r._speed = settings.ripple_speed / 100.f;
         r._time = new QTime();
         _ripples.push_back(r);
         r._time->start();
