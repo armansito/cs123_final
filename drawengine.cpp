@@ -41,8 +41,8 @@ extern "C"{
 }
 
 // this is the width of the big water square.
-#define WATER_WIDTH (100)
-#define VERTICES_PER_UNIT (2)
+#define WATER_WIDTH (90)
+#define VERTICES_PER_UNIT (1)
 
 //#define LOG(s) cout << s << endl;
 #define LOG(s)

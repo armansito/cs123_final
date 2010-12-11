@@ -31,7 +31,11 @@ void main (void) {
 	vec3 refracted = normalize(vec3(refractedRed[0], refractedGrn[1], refractedBlu[2]));
 	vec4 fractColor = textureCube(CubeMap, refracted);
 
-	gl_FragColor = mix(flectColor, fractColor, BLEND);
+	const float R_0 = 0.4;
+	float fresnel = R_0 + (1 - R_0) * pow((1 - dot(-normalize(vView), nNormal)), 5.0);
+	fresnel = max(0.0, min(fresnel, 1.0));
+
+	gl_FragColor = mix(fractColor, flectColor, fresnel);
 
 	// specular lighting
 	//vec3 reflectedLight = normalize(reflect(light, nNormal));
