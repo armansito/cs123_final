@@ -15,7 +15,7 @@ const float PI = 3.141593;
 const float AMBIENT_AMPLITUDE = 0.2;
 const float AMBIENT_SPEED = .01;
 const float AMBIENT_ENERGY = 10000000.0;
-const vec2 AMBIENT_CENTER = vec2(-1.0, -2.5);
+const vec2 AMBIENT_CENTER = vec2(100.3, 0.0);
 
 void main() {
       vec4 pos = gl_Vertex;
