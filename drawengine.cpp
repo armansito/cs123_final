@@ -40,9 +40,9 @@ extern "C"{
 }
 
 // this is the width of the big water square.
-#define EXTENT 100
-#define WATER_WIDTH (150)
-#define VERTICES_PER_UNIT (1)
+#define EXTENT 50
+#define WATER_WIDTH (125)
+#define VERTICES_PER_SIDE (75)
 
 //#define LOG(s) cout << s << endl;
 #define LOG(s)
@@ -123,7 +123,8 @@ void DrawEngine::load_models() {
     glNewList(models_["grid"].idx,GL_COMPILE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    float r = WATER_WIDTH / 2.f, dim = WATER_WIDTH * VERTICES_PER_UNIT, delta = r * 2 / dim;
+
+    float r = WATER_WIDTH / 2.f, dim = VERTICES_PER_SIDE, delta = WATER_WIDTH / dim;
     for(int y = 0; y < dim; ++y) {
         glBegin(GL_QUAD_STRIP);
         for(int x = 0; x <= dim; ++x) {
@@ -133,6 +134,7 @@ void DrawEngine::load_models() {
         }
         glEnd();
     }
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEndList();
 
@@ -418,7 +420,7 @@ void DrawEngine::render_scene(float time,int w,int h) {
     //glDisable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
-    shader_programs_["water"]->setUniformValue("neighborDist", 1.f / VERTICES_PER_UNIT);
+    shader_programs_["water"]->setUniformValue("neighborDist", 0);
     shader_programs_["water"]->setUniformValue("time", time);
     shader_programs_["water"]->setUniformValue("ripples_count",(GLuint)_ripples.size());
     shader_programs_["water"]->setUniformValueArray("ripples",ripples,_ripples.size()*4,4);
