@@ -41,7 +41,7 @@ extern "C"{
 }
 
 // this is the width of the big water square.
-#define EXTENT 45
+#define EXTENT 100
 #define WATER_WIDTH (90)
 #define VERTICES_PER_UNIT (1)
 
@@ -77,7 +77,7 @@ DrawEngine::DrawEngine(const QGLContext *context,int w,int h) : context_(context
     camera_.center.x = 0.f,camera_.center.y = 0.f,camera_.center.z = 0.f;
     camera_.eye.x = 0.f,camera_.eye.y = 5.0f,camera_.eye.z = -5.f;
     camera_.up.x = 0.f,camera_.up.y = 1.f,camera_.up.z = 0.f;
-    camera_.near = 0.1f,camera_.far = sqrt(3)*EXTENT;
+    camera_.near = 0.1f,camera_.far = sqrt(6)*EXTENT;
     camera_.fovy = 60.f;
 
     //init resources - so i heard you like colored text?
