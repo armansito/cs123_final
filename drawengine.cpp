@@ -41,6 +41,7 @@ extern "C"{
 }
 
 // this is the width of the big water square.
+#define EXTENT 45
 #define WATER_WIDTH (90)
 #define VERTICES_PER_UNIT (1)
 
@@ -76,7 +77,7 @@ DrawEngine::DrawEngine(const QGLContext *context,int w,int h) : context_(context
     camera_.center.x = 0.f,camera_.center.y = 0.f,camera_.center.z = 0.f;
     camera_.eye.x = 0.f,camera_.eye.y = 5.0f,camera_.eye.z = -5.f;
     camera_.up.x = 0.f,camera_.up.y = 1.f,camera_.up.z = 0.f;
-    camera_.near = 0.1f,camera_.far = 400.f;
+    camera_.near = 0.1f,camera_.far = sqrt(3)*EXTENT;
     camera_.fovy = 60.f;
 
     //init resources - so i heard you like colored text?
@@ -140,7 +141,7 @@ void DrawEngine::load_models() {
     glNewList(models_["skybox"].idx,GL_COMPILE);
     //Be glad we wrote this for you...ugh.
     glBegin(GL_QUADS);
-    float fExtent = WATER_WIDTH / 2;
+    float fExtent = EXTENT;//WATER_WIDTH / 2;
     glTexCoord3f(1.0f,-1.0f,-1.0f); glVertex3f(fExtent,-fExtent,-fExtent);
     glTexCoord3f(-1.0f,-1.0f,-1.0f);glVertex3f(-fExtent,-fExtent,-fExtent);
     glTexCoord3f(-1.0f,1.0f,-1.0f);glVertex3f(-fExtent,fExtent,-fExtent);
@@ -284,11 +285,11 @@ void DrawEngine::draw_frame(float time,int w,int h) {
     textured_quad(w,h,true);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    /*
+
     //you may want to add code here
     // step 1
     framebuffer_objects_["fbo_2"]->bind();
-    //shader_programs_["brightpass"]->bind();
+    shader_programs_["brightpass"]->bind();
     glBindTexture(GL_TEXTURE_2D, framebuffer_objects_["fbo_1"]->texture());
     textured_quad(w,h,true);
     shader_programs_["brightpass"]->release();
@@ -309,7 +310,7 @@ void DrawEngine::draw_frame(float time,int w,int h) {
         glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D,0);
      }
-     */
+
 }
 
 /**
@@ -405,8 +406,9 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_TEXTURE_CUBE_MAP);
     glBindTexture(GL_TEXTURE_CUBE_MAP,textures_["cube_map_1"]);
-    glCallList(models_["skybox"].idx);
     //glEnable(GL_CULL_FACE);
+    glCallList(models_["skybox"].idx);
+    //glDisable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
     shader_programs_["water"]->setUniformValue("neighborDist", 1.f / VERTICES_PER_UNIT);
@@ -442,7 +444,6 @@ void DrawEngine::render_scene(float time,int w,int h) {
     shader_programs_["reflect"]->release();
     */
 
-    //glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glBindTexture(GL_TEXTURE_CUBE_MAP,0);
     glDisable(GL_TEXTURE_CUBE_MAP);
