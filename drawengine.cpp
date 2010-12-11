@@ -44,7 +44,7 @@ extern "C"{
 #define LOG(s) cout << s << endl;
 
 #define MAX_RIPPLES 50
-#define RIPPLE_DEATH_TIME 10000
+#define RIPPLE_DEATH_TIME 6000
 
 
 /**
@@ -308,18 +308,23 @@ void DrawEngine::draw_frame(float time,int w,int h) {
 
 /**
   @paragraph Updates each ripples elapsed time. If the ripple has been around for a
-             certain time, it will be declared dead and removed from the list
+             certain time, it will be decl
+        cout << i << endl;
+        cout << it << endl;ared dead and removed from the list
  **/
 void DrawEngine::updateRipples()
 {
-    Ripple r;
-    std::vector<Ripple>::iterator it = _ripples.begin();
-    while (it != _ripples.end()) {
-        r = (*it);
-        if (r._time->elapsed() >= RIPPLE_DEATH_TIME) {
-            delete r._time;
-            _ripples.erase(it++);
-        } else ++it;
+    if (_ripples.size() > 0) {
+        Ripple r;
+        std::vector<Ripple>::iterator it = _ripples.begin();
+        while (it != _ripples.end()) {
+            r = (*it);
+            LOG(r._time->elapsed());
+            if (r._time->elapsed() >= RIPPLE_DEATH_TIME) {
+                delete r._time;
+                it = _ripples.erase(it);
+            } else ++it;
+        }
     }
 }
 
@@ -370,12 +375,13 @@ void DrawEngine::render_blur(float w,float h) {
 
 **/
 void DrawEngine::render_scene(float time,int w,int h) {
-
+    updateRipples();
+    LOG(_ripples.size());
     GLfloat *ripples = new GLfloat[_ripples.size()*4];
     Ripple r;
-    int i = -1;
-    for (std::vector<Ripple>::iterator it = _ripples.begin(); it != _ripples.end(); ++it) {
-        r = (*it);
+    int i = 0;
+    for (unsigned int it = 0; it < _ripples.size(); it++) {
+        r = _ripples[it];
         ripples[i++] = r._position.x;
         ripples[i++] = r._position.y;
         ripples[i++] = r._position.z;
@@ -390,11 +396,9 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
     shader_programs_["water"]->setUniformValue("time", time);
+    shader_programs_["water"]->setUniformValue("ripples_count",(GLuint)_ripples.size());
     shader_programs_["water"]->setUniformValueArray("ripples",ripples,_ripples.size()*4,4);
-    shader_programs_["water"]->setUniformValue("ripples_count",_ripples.size());
     shader_programs_["water"]->setUniformValue("CubeMap",GL_TEXTURE0);
-
-    delete [] ripples;
 
     glCallList(models_["grid"].idx);
 
@@ -406,6 +410,8 @@ void DrawEngine::render_scene(float time,int w,int h) {
     */
 
     shader_programs_["water"]->release();
+
+    delete [] ripples;
 
     /*
     shader_programs_["reflect"]->bind();\
