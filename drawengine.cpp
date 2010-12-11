@@ -52,7 +52,7 @@ extern "C"{
 #define MAX_RIPPLES 50
 #define RIPPLE_DEATH_TIME 8000
 
-#define RIPPLE_DELAY 100
+#define RIPPLE_DELAY 250
 
 
 /**
@@ -340,15 +340,21 @@ void DrawEngine::updateRipples()
 
 void DrawEngine::addRipple(float3 p)
 {
-    if (_ripples.size() < MAX_RIPPLES) {
-        Ripple r;
-        r._position = p;
-        r._amplitude = settings.ripple_amplitude;
-        r._energy = settings.ripple_energy;
-        r._speed = settings.ripple_speed / 100.f;
-        r._time = new QTime();
-        _ripples.push_back(r);
-        r._time->start();
+    static QTime timer = QTime::currentTime();
+    static int milliseconds = 0;
+
+    milliseconds += timer.restart();
+    if (milliseconds >= RIPPLE_DELAY) {
+        if (_ripples.size() < MAX_RIPPLES) {
+            Ripple r;
+            r._position = p;
+            r._amplitude = settings.ripple_amplitude;
+            r._energy = settings.ripple_energy;
+            r._speed = settings.ripple_speed / 100.f;
+            r._time = new QTime();
+            _ripples.push_back(r);
+            r._time->start();
+        }
     }
 }
 
@@ -570,19 +576,14 @@ void DrawEngine::mouse_wheel_event(int dx) {
 
 void DrawEngine::mouse_press_event(float2 point)
 {
-    static QTime timer = QTime::currentTime();
-    static int milliseconds = 0;
+    float3 R = getMouseRay(point, camera_);
+    float3 p = camera_.eye;
+    float3 intersect;
+    float t = -p.y / R.y;
+    intersect = p + R*t;
+    Ripple r;
+    addRipple(intersect);
 
-    milliseconds += timer.restart();
-    if (milliseconds >= RIPPLE_DELAY) {
-        float3 R = getMouseRay(point, camera_);
-        float3 p = camera_.eye;
-        float3 intersect;
-        float t = -p.y / R.y;
-        intersect = p + R*t;
-        Ripple r;
-        addRipple(intersect);
-    }
 }
 
 /**

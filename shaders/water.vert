@@ -12,13 +12,10 @@ varying vec3 normal, view, lightDir;
 const vec4 light = vec4(20, 20, 0, 1);
 const float PI = 3.141593;
 
-const float AMPLITUDE = 1.5;
-const float SPEED = .01;
-const float ENERGY = 700.0;
-
-const float AMBIENT_AMPLITUDE = 0.3;
-const float AMBIENT_SPEED = .007;
-const float AMBIENT_ENERGY = 700.0;
+const float AMBIENT_AMPLITUDE = 0.1;
+const float AMBIENT_SPEED = .005;
+const float AMBIENT_ENERGY = 10000000.0;
+const vec2 AMBIENT_CENTER = vec2(-1.0, -2.5);
 
 void main() {
      	vec4 pos = gl_Vertex;
@@ -40,14 +37,17 @@ void main() {
 	       accNorm.z += ripples[i].z * dVector.y * dampening * cos(argument) / dist;
 	    }
 	}
-	/*
+
 	// this is the background noise
-	float dist = sqrt(pos.x * pos.x + pos.z * pos.z);
+	vec2 distVec = vec2(pos.x - AMBIENT_CENTER.x, pos.z - AMBIENT_CENTER.y);
+	float dist = sqrt(distVec.x * distVec.x + distVec.y * distVec.y);
+
 	float arg = dist - time * AMBIENT_SPEED;
-	pos.y += sin(arg) * AMBIENT_AMPLITUDE;
-	accNorm.x += 2.0 * AMBIENT_AMPLITUDE * pos.x * cos(arg) / dist;
-	accNorm.z += 2.0 * AMBIENT_AMPLITUDE * pos.z * cos(arg) / dist;
-	*/
+	float dampen = exp(-time / AMBIENT_ENERGY);
+	pos.y += sin(arg) * AMBIENT_AMPLITUDE * dampen;
+
+	accNorm.x += AMBIENT_AMPLITUDE * distVec.x * dampen * cos(arg) / dist;
+	accNorm.z += AMBIENT_AMPLITUDE * distVec.y * dampen * cos(arg) / dist;
 
 	normal = normalize(accNorm);
 	
