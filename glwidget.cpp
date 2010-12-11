@@ -46,6 +46,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
     float2 pos = float2(event->x(), event->y());
     if(event->buttons() & Qt::RightButton)
         draw_engine_->mouse_drag_event(mouse_pos_prev_, pos);
+    else if (event->buttons() & Qt::LeftButton)
+        draw_engine_->mouse_press_event(pos);
     mouse_pos_prev_ = pos;
 }
 
@@ -84,6 +86,6 @@ void GLWidget::render_text() {
        prev_fps_ *= 0.95;
        prev_fps_ += draw_engine_->fps() * 0.05;
 
-    } //this->renderText(10.0, 20.0, "FPS: " + QString::number((int)(prev_fps_)), f);
-    //this->renderText(10.0, 35.0, "S: YOUR MOM", f);
+    } this->renderText(10.0, 20.0, "FPS: " + QString::number((int)(prev_fps_)), f);
+    this->renderText(10.0, 35.0, "S: YOUR MOM", f);
 }
