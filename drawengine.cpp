@@ -13,6 +13,7 @@
 #include <QString>
 #include <iostream>
 #include <QFile>
+#include <QTime>
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
 #define APIENTRY
@@ -50,6 +51,8 @@ extern "C"{
 
 #define MAX_RIPPLES 50
 #define RIPPLE_DEATH_TIME 8000
+
+#define RIPPLE_DELAY 100
 
 
 /**
@@ -540,7 +543,7 @@ void DrawEngine::resize_frame(int w,int h) {
 /**
   @paragraph Called by GLWidget when the mouse is dragged.  Rotates the camera
   based on mouse movement.
-std::vector iterator
+
   @param p0: the old mouse position
   @param p1: the new mouse position
 **/
@@ -567,13 +570,19 @@ void DrawEngine::mouse_wheel_event(int dx) {
 
 void DrawEngine::mouse_press_event(float2 point)
 {
-    float3 R = getMouseRay(point, camera_);
-    float3 p = camera_.eye;
-    float3 intersect;
-    float t = -p.y / R.y;
-    intersect = p + R*t;
-    Ripple r;
-    addRipple(intersect);
+    static QTime timer = QTime::currentTime();
+    static int milliseconds = 0;
+
+    milliseconds += timer.restart();
+    if (milliseconds >= RIPPLE_DELAY) {
+        float3 R = getMouseRay(point, camera_);
+        float3 p = camera_.eye;
+        float3 intersect;
+        float t = -p.y / R.y;
+        intersect = p + R*t;
+        Ripple r;
+        addRipple(intersect);
+    }
 }
 
 /**
