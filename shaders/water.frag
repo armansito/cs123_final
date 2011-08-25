@@ -36,5 +36,6 @@ void main (void) {
 	float specular = max(dot(1.0 * reflected, light), 0.0);
 	specular = pow(specular, SPECULAR_EXP) * SPECULAR_COEFF;
 
-	gl_FragColor += vec4(specular, specular, specular, 1);
+        gl_FragColor += vec4(specular, specular, specular, 1);
+
 }

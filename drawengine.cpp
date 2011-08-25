@@ -15,7 +15,7 @@
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
 #define APIENTRY
-#define ROOT_PATH "/Users/armanuguray/Documents/courses/cs123/final/cs123_final/"
+#define ROOT_PATH "/Users/armanuguray/Documents/Brown/Courses/Fall 2010/CSCI1230/cs123_final/"
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
 #include <QtOpenGL/qgl.h>
@@ -42,15 +42,15 @@ extern "C"{
 // this is the width of the big water square.
 #define EXTENT 150
 #define WATER_WIDTH (130)
-#define VERTICES_PER_SIDE (70)
+#define VERTICES_PER_SIDE (200)
 
 //#define LOG(s) cout << s << endl;
 #define LOG(s)
 
-#define MAX_RIPPLES 50
-#define RIPPLE_DEATH_TIME 4000
+#define MAX_RIPPLES 100
+#define RIPPLE_DEATH_TIME 10000
 
-#define RIPPLE_DELAY 250
+#define RIPPLE_DELAY 550
 
 
 /**
@@ -113,14 +113,14 @@ DrawEngine::~DrawEngine() {
 **/
 void DrawEngine::load_models() {
     cout << "\033[1mLoading models...\033[0m" << endl;
-    models_["yacht"].model = glmReadOBJ(ROOT_PATH "models/yacht/yacht.obj");
-    glmUnitize(models_["yacht"].model);
-    glEnable(GL_LIGHTING);
-    glNewList(models_["yacht"].idx = glGenLists(1),GL_COMPILE);
-    glmFacetNormals(models_["yacht"].model);
-    glmVertexNormals(models_["yacht"].model, 90.0);
-    glmDraw(models_["yacht"].model,GLM_SMOOTH | GLM_TEXTURE);
-    glEndList();
+   // models_["yacht"].model = glmReadOBJ(ROOT_PATH "models/yacht/yacht.obj");
+    //glmUnitize(models_["yacht"].model);
+    //glEnable(GL_LIGHTING);
+    //glNewList(models_["yacht"].idx = glGenLists(1),GL_COMPILE);
+    //glmFacetNormals(models_["yacht"].model);
+    //glmVertexNormals(models_["yacht"].model, 90.0);
+    //glmDraw(models_["yacht"].model,GLM_SMOOTH | GLM_TEXTURE);
+    //glEndList();
     glDisable(GL_LIGHTING);
     cout << "\t \033[32m/course/cs123/data/mesh/yacht.obj\033[0m" << endl;
 
@@ -183,6 +183,7 @@ void DrawEngine::load_models() {
   initialization.
 **/
 void DrawEngine::load_shaders() {
+
     cout << "\033[1mLoading shaders...\033[0m" << endl;
     shader_programs_["reflect"] = new QGLShaderProgram(context_);
     shader_programs_["reflect"]->addShaderFromSourceFile(QGLShader::Vertex,
@@ -422,20 +423,27 @@ void DrawEngine::render_scene(float time,int w,int h) {
     glEnable(GL_TEXTURE_CUBE_MAP);
     glBindTexture(GL_TEXTURE_CUBE_MAP,textures_["cube_map_1"]);
     //glEnable(GL_CULL_FACE);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    const float3 center = (camera_.center - camera_.eye).getNormalized();
+    gluLookAt(0,0,0,center.x,center.y,center.z,camera_.up.x,camera_.up.y,camera_.up.z);
     glCallList(models_["skybox"].idx);
+    glPopMatrix();
     //glDisable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
     shader_programs_["water"]->bind();
+  //  glUseProgram(shader_programs_["water"]->programId());
     shader_programs_["water"]->setUniformValue("neighborDist", 0);
     shader_programs_["water"]->setUniformValue("time", time);
     shader_programs_["water"]->setUniformValue("ripples_count",(GLuint)_ripples.size());
     shader_programs_["water"]->setUniformValueArray("ripples",ripples,_ripples.size()*4,4);
     shader_programs_["water"]->setUniformValueArray("other_vals",other_vals,_ripples.size()*2,2);
-    shader_programs_["water"]->setUniformValue("CubeMap",GL_TEXTURE0);
 
     glCallList(models_["grid"].idx);
 
     shader_programs_["water"]->release();
+    //glUseProgram(0);
 
     delete[] ripples;
     delete[] other_vals;
@@ -619,7 +627,7 @@ GLuint DrawEngine::load_cube_map(QList<QFile *> files) {
         image.load(files[i]->fileName());
         image = image.mirrored(false,true);
         texture = QGLWidget::convertToGLFormat(image);
-        texture = texture.scaledToWidth(1024,Qt::SmoothTransformation);
+      //  texture = texture.scaledToWidth(1024,Qt::SmoothTransformation);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,3,3,texture.width(),texture.height(),0,GL_RGBA,GL_UNSIGNED_BYTE,texture.bits());
         gluBuild2DMipmaps(GL_TEXTURE_CUBE_MAP_POSITIVE_X +i, 3, texture.width(), texture.height(), GL_RGBA, GL_UNSIGNED_BYTE, texture.bits());
         cout << "\t \033[32m" << files[i]->fileName().toStdString() << "\033[0m" << endl;

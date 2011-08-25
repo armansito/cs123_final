@@ -12,8 +12,8 @@ varying vec3 normal, view, lightDir;
 const vec4 light = vec4(-40, 50, 40, 1);
 
 const float AMBIENT_AMPLITUDE = 0.1;
-const float AMBIENT_SPEED = .01;
-const float AMBIENT_ENERGY = 10000000.0;
+const float AMBIENT_SPEED = .005;
+const float AMBIENT_ENERGY = 5000000.0;
 const vec2 AMBIENT_CENTER = vec2(100.3, 0.0);
 
 void main() {
