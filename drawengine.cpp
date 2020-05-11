@@ -15,7 +15,7 @@
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
 #define APIENTRY
-#define ROOT_PATH "/Users/armanuguray/Documents/Brown/Courses/Fall 2010/CSCI1230/cs123_final/"
+#define ROOT_PATH "/Users/armansito/Projects/cs123_final/"
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
 #include <QtOpenGL/qgl.h>

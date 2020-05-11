@@ -8,7 +8,7 @@
 #include "common.h"
 class DrawEngine;
 class QTimer;
-class QTime;
+class QElapsedTimer;
 
 class GLWidget : public QGLWidget {
     Q_OBJECT
@@ -27,7 +27,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *event);
     QTimer *timer_;
-    QTime *time_;
+    QElapsedTimer *time_;
     DrawEngine *draw_engine_;
     float prev_fps_;
     float2 mouse_pos_prev_;

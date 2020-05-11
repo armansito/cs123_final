@@ -11,7 +11,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QTimer>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QFileDialog>
 
 GLWidget::GLWidget(QWidget *parent) :
@@ -28,10 +28,11 @@ GLWidget::~GLWidget() {
 
 void GLWidget::initializeGL() {
     draw_engine_ = new DrawEngine(this->context(), this->width(), this->height());
-    time_ = new QTime();
+    time_ = new QElapsedTimer();
     timer_ = new QTimer(this);
     connect(timer_, SIGNAL(timeout()), this, SLOT(repaint()));
     timer_->start(30.f);
+    time_->start();
 }
 
 void GLWidget::paintGL() {

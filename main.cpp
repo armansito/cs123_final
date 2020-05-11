@@ -1,4 +1,4 @@
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <iostream>
 #ifdef __APPLE__
 #include <QtOpenGL/qgl.h>
